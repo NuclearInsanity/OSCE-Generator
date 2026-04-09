@@ -18,6 +18,58 @@
       --shadow: 0 18px 40px rgba(19, 39, 34, 0.08);
     }
 
+    body[data-theme="linen"] {
+      --bg: #f5eee7;
+      --panel: #fffaf5;
+      --panel-alt: #f9f1e8;
+      --text: #4b3124;
+      --muted: #7d665b;
+      --line: #e6d8cd;
+      --accent: #b86a3c;
+      --accent-dark: #96522d;
+      --soft: #f0dfd0;
+      --shadow: 0 18px 40px rgba(86, 50, 33, 0.10);
+    }
+
+    body[data-theme="forest"] {
+      --bg: #ebf3ec;
+      --panel: #f8fbf8;
+      --panel-alt: #eef6ef;
+      --text: #173225;
+      --muted: #5d7566;
+      --line: #d5e2d8;
+      --accent: #2b7a50;
+      --accent-dark: #1e5e3c;
+      --soft: #dcebdd;
+      --shadow: 0 18px 40px rgba(22, 49, 35, 0.10);
+    }
+
+    body[data-theme="slate"] {
+      --bg: #edf1f5;
+      --panel: #fbfcfe;
+      --panel-alt: #f1f4f8;
+      --text: #233446;
+      --muted: #667789;
+      --line: #d7dfe7;
+      --accent: #466c96;
+      --accent-dark: #345372;
+      --soft: #dde6f0;
+      --shadow: 0 18px 40px rgba(33, 48, 68, 0.10);
+    }
+
+    body[data-theme="berry"] {
+      --bg: #f5edf2;
+      --panel: #fffafd;
+      --panel-alt: #f9f0f5;
+      --text: #4a2339;
+      --muted: #7c6070;
+      --line: #e4d6df;
+      --accent: #a44d74;
+      --accent-dark: #7f3758;
+      --soft: #efdce7;
+      --shadow: 0 18px 40px rgba(72, 34, 56, 0.10);
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -80,6 +132,21 @@
       font-size: 0.9rem;
       line-height: 1.45;
       word-break: break-word;
+    }
+
+    .theme-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0 6px;
+    }
+
+    .theme-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--muted);
     }
 
     .card {
@@ -187,6 +254,19 @@
       background: transparent;
       color: var(--accent);
       border: 1px solid rgba(31, 107, 88, 0.22);
+    }
+
+    .theme-button {
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 10px 14px;
+    }
+
+    .theme-button.is-active {
+      background: var(--accent);
+      color: white;
+      border-color: transparent;
     }
 
     .pool {
@@ -341,11 +421,19 @@
       <div>
         <h1>AFRM OSCE Picker</h1>
         <p>Filter by year, topic, sub-topic, or station focus, then move through the matching stations one by one. Use the random button when you want variety, and the arrows when you want to browse the filtered set in order.</p>
+        <div class="theme-picker">
+          <span class="theme-label">Theme</span>
+          <button class="theme-button" data-theme="default">Mist</button>
+          <button class="theme-button" data-theme="linen">Linen</button>
+          <button class="theme-button" data-theme="forest">Forest</button>
+          <button class="theme-button" data-theme="slate">Slate</button>
+          <button class="theme-button" data-theme="berry">Berry</button>
+        </div>
       </div>
       <div class="workbook">
         <strong>OSCE&#x27;s accumulated 6.3.26 with stem and rubric.xlsx</strong>
         <span>Built from the latest workbook export.</span>
-        <span>230 stations • Updated 06 Apr 2026 15:18</span>
+        <span>230 stations • Updated 10 Apr 2026 06:11</span>
       </div>
     </section>
 
@@ -460,6 +548,7 @@
       clearFiltersButton: document.getElementById("clearFiltersButton"),
       prevButton: document.getElementById("prevButton"),
       nextButton: document.getElementById("nextButton"),
+      themeButtons: [...document.querySelectorAll(".theme-button")],
     };
 
     function setSelectOptions(select, values) {
@@ -687,6 +776,35 @@
       elements.examFilter.value = "";
     }
 
+    function applyTheme(themeName) {
+      const theme = themeName && themeName !== "default" ? themeName : "default";
+      if (theme === "default") {
+        document.body.removeAttribute("data-theme");
+      } else {
+        document.body.setAttribute("data-theme", theme);
+      }
+
+      elements.themeButtons.forEach((button) => {
+        button.classList.toggle("is-active", button.dataset.theme === theme);
+      });
+
+      try {
+        window.localStorage.setItem("afrm-osce-theme", theme);
+      } catch (error) {
+        // Ignore storage issues and continue with the in-memory theme.
+      }
+    }
+
+    function initializeTheme() {
+      let savedTheme = "default";
+      try {
+        savedTheme = window.localStorage.getItem("afrm-osce-theme") || "default";
+      } catch (error) {
+        savedTheme = "default";
+      }
+      applyTheme(savedTheme);
+    }
+
     function attachEvents() {
       [elements.yearFilter, elements.typeFilter, elements.topicFilter, elements.subtopicFilter, elements.examFilter].forEach((element) => {
         element.addEventListener("input", syncToFilteredPool);
@@ -729,9 +847,13 @@
         state.answerVisible = !state.answerVisible;
         renderPanels();
       });
+      elements.themeButtons.forEach((button) => {
+        button.addEventListener("click", () => applyTheme(button.dataset.theme));
+      });
     }
 
     populateFilters();
+    initializeTheme();
     attachEvents();
     syncToFilteredPool();
   </script>
