@@ -24,12 +24,13 @@ That regenerates:
 ## What it does
 
 - Reads the workbook directly from `.xlsx` without `pandas` or `openpyxl`
+- Switches between the official OSCE station bank and the mock/practice station bank
 - Filters by year, type, main topic, sub-topic, and specific examination
-- Picks a random station either from the filtered set or from the full dataset
-- Shows the predicted stem first
-- Shows the original source question as a fallback under the stem
-- Reveals the polished question prompt when you click `Show questions`
-- Reveals both the marking rubric and GPT answer when you click `Show answer`
+- Keeps a carousel over the currently filtered station set so you can move left and right through matches
+- Keeps random selection from the filtered set and from the full dataset
+- Shows the original source question as the main station prompt
+- Reveals the polished question prompt when you click `Show question`
+- Reveals the GPT answer when you click `Show answer`
 
 ## GitHub Pages
 
@@ -50,5 +51,6 @@ When the workbook changes:
 ## Notes
 
 - If the workbook moves or is renamed, update the `DEFAULT_WORKBOOK` path in `osce_picker_app.py` or run the script with `--workbook "/path/to/file.xlsx"`.
-- If a station has no stem, the app falls back to the original question text in the main stem panel.
-- Anything embedded in `docs/index.html` is published content once the GitHub Pages site is live.
+- If the practice workbook moves or is renamed, update the `DEFAULT_PRACTICE_WORKBOOK` path in `osce_picker_app.py` or run the script with `--practice-workbook "/path/to/file.xlsx"`.
+- If a station has no polished question, the app falls back to the original question text in the question panel.
+- Anything embedded in `docs/index.html` is published content once the GitHub Pages site is live, including the mock/practice station bank.
